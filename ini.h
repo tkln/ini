@@ -4,7 +4,8 @@
 #include <sys/types.h>
 
 struct ini_keyval {
-    const char *key, *val;
+    const char *key;
+    char *val;
 };
 
 struct ini_section {
@@ -19,6 +20,21 @@ struct ini_file {
     char *buf;
 };
 
+enum ini_parse_type {
+    INI_PARSE_TYPE_INT,
+    INI_PARSE_TYPE_FLOAT,
+    INI_PARSE_TYPE_STRING,
+};
+
+struct ini_parsed_val {
+    enum ini_parse_type type;
+    union {
+        int i;
+        float f;
+        char *s;
+    };
+};
+
 void ini_init(struct ini_file *ini);
 struct ini_section *ini_get_section(struct ini_file *ini, const char *name);
 struct ini_keyval *ini_get_keyval(struct ini_section *sec, const char *key);
@@ -31,9 +47,14 @@ struct ini_keyval *ini_get_section_keyval(struct ini_file *ini,
                                           const char *key);
 struct ini_section *ini_add_section(struct ini_file *ini, const char *name);
 struct ini_keyval *ini_add_keyval(struct ini_section *sec, const char *key,
-                                  const char *val);
+                                  char *val);
 int ini_load(const char *path, struct ini_file *ini);
 int ini_save(const char *path, struct ini_file *ini);
+int ini_parse_int(struct ini_keyval *kv, int *out);
+int ini_parse_float(struct ini_keyval *kv, float *out);
+int ini_parse_string(struct ini_keyval *kv, char **out);
+int ini_parse_section_keyval(struct ini_file *ini, const char *section,
+                             const char *key, struct ini_parsed_val *out_val);
 void ini_destroy(struct ini_file *ini);
 
 #endif

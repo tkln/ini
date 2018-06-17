@@ -76,7 +76,7 @@ struct ini_section *ini_add_section(struct ini_file *ini, const char *name)
 }
 
 struct ini_keyval *ini_add_keyval(struct ini_section *sec, const char *key,
-                                  const char *val)
+                                  char *val)
 {
     sec->keyvals = realloc(sec->keyvals, (sec->n_keyvals + 1) *
                                          sizeof(sec->keyvals[0]));
@@ -159,6 +159,89 @@ int ini_save(const char *path, struct ini_file *ini)
     }
 
     close(fd);
+    return 0;
+}
+
+int ini_parse_int(struct ini_keyval *kv, int *out)
+{
+    int val;
+    char *endptr;
+
+    if (!kv)
+        return -1;
+
+    val = strtol(kv->val, &endptr, 0);
+
+    if (endptr == kv->val)
+        return -1;
+
+    *out = val;
+
+    return 0;
+}
+
+int ini_parse_float(struct ini_keyval *kv, float *out)
+{
+    float val;
+    char *endptr;
+
+    if (!kv)
+        return -1;
+
+    val = strtof(kv->val, &endptr);
+
+    if (endptr == kv->val)
+        return -1;
+
+    *out = val;
+
+    return 0;
+}
+
+int ini_parse_string(struct ini_keyval *kv, char **out)
+{
+    if (!kv)
+        return -1;
+
+    if (!kv->val)
+        return -1;
+
+    *out = kv->val;
+
+    return 0;
+}
+
+int ini_parse_section_keyval(struct ini_file *ini, const char *section,
+                             const char *key, struct ini_parsed_val *out_val)
+{
+    struct ini_keyval *kv;
+    struct ini_parsed_val parsed;
+    int err;
+
+    kv = ini_get_section_keyval(ini, section, key);
+    if (!kv)
+        return -1;
+
+    parsed.type = INI_PARSE_TYPE_INT;
+    err = ini_parse_int(kv, &parsed.i);
+    if (!err)
+        goto out;
+
+    parsed.type = INI_PARSE_TYPE_FLOAT;
+    err = ini_parse_float(kv, &parsed.f);
+    if (!err)
+        goto out;
+
+    parsed.type = INI_PARSE_TYPE_STRING;
+    parsed.s = kv->val;
+    err = ini_parse_float(kv, &parsed.f);
+    if (!err)
+        goto out;
+
+    return -1;
+
+out:
+    *out_val = parsed;
     return 0;
 }
 
