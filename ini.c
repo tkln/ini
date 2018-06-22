@@ -211,16 +211,10 @@ int ini_parse_string(struct ini_keyval *kv, char **out)
     return 0;
 }
 
-int ini_parse_section_keyval(struct ini_file *ini, const char *section,
-                             const char *key, struct ini_parsed_val *out_val)
+int ini_parse_keyval(struct ini_keyval *kv, struct ini_parsed_val *out_val)
 {
-    struct ini_keyval *kv;
     struct ini_parsed_val parsed;
     int err;
-
-    kv = ini_get_section_keyval(ini, section, key);
-    if (!kv)
-        return -1;
 
     parsed.type = INI_PARSE_TYPE_INT;
     err = ini_parse_int(kv, &parsed.i);
@@ -242,6 +236,18 @@ int ini_parse_section_keyval(struct ini_file *ini, const char *section,
 out:
     *out_val = parsed;
     return 0;
+}
+
+int ini_parse_section_keyval(struct ini_file *ini, const char *section,
+                             const char *key, struct ini_parsed_val *out_val)
+{
+    struct ini_keyval *kv;
+
+    kv = ini_get_section_keyval(ini, section, key);
+    if (!kv)
+        return -1;
+
+    return ini_parse_keyval(kv, out_val);
 }
 
 void ini_destroy(struct ini_file *ini)

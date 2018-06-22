@@ -57,6 +57,7 @@ int ini_save(const char *path, struct ini_file *ini);
 int ini_parse_int(struct ini_keyval *kv, int *out);
 int ini_parse_float(struct ini_keyval *kv, float *out);
 int ini_parse_string(struct ini_keyval *kv, char **out);
+int ini_parse_keyval(struct ini_keyval *kv, struct ini_parsed_val *out_val);
 int ini_parse_section_keyval(struct ini_file *ini, const char *section,
                              const char *key, struct ini_parsed_val *out_val);
 void ini_destroy(struct ini_file *ini);
