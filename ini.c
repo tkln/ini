@@ -233,8 +233,7 @@ int ini_parse_section_keyval(struct ini_file *ini, const char *section,
         goto out;
 
     parsed.type = INI_PARSE_TYPE_STRING;
-    parsed.s = kv->val;
-    err = ini_parse_float(kv, &parsed.f);
+    err = ini_parse_string(kv, &parsed.s);
     if (!err)
         goto out;
 
