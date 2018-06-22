@@ -172,7 +172,7 @@ int ini_parse_int(struct ini_keyval *kv, int *out)
 
     val = strtol(kv->val, &endptr, 0);
 
-    if (endptr == kv->val)
+    if (endptr < kv->val + strlen(kv->val) || endptr == kv->val)
         return -1;
 
     *out = val;
@@ -190,7 +190,7 @@ int ini_parse_float(struct ini_keyval *kv, float *out)
 
     val = strtof(kv->val, &endptr);
 
-    if (endptr == kv->val)
+    if (endptr < kv->val + strlen(kv->val) || endptr == kv->val)
         return -1;
 
     *out = val;
