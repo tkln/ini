@@ -3,6 +3,10 @@
 
 #include <sys/types.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct ini_keyval {
     const char *key;
     char *val;
@@ -56,5 +60,9 @@ int ini_parse_string(struct ini_keyval *kv, char **out);
 int ini_parse_section_keyval(struct ini_file *ini, const char *section,
                              const char *key, struct ini_parsed_val *out_val);
 void ini_destroy(struct ini_file *ini);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
